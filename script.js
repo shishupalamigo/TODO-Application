@@ -96,6 +96,8 @@ function main() {
         count() + ` ${+count() < 2 ? "item" : "items"} left`;
   
       localStorage.setItem("todos", JSON.stringify(remainingTodo));
+      updateActiveButton();
+      createUI(allTodos);
     }
     function deleteCompletedTodo() {
       allTodos = allTodos.filter((todo) => !todo.isDone);
@@ -104,6 +106,7 @@ function main() {
         count() + ` ${+count() < 2 ? "item" : "items"} left`;
       localStorage.setItem("todos", JSON.stringify(allTodos));
       updateActiveButton();
+      createUI(allTodos);
     }
   
     function handleChange(event) {
@@ -149,12 +152,21 @@ function main() {
           span.classList.add("todo-name");
           span.innerText = todo.name;
           span.id = todo.time;
+          let editBtn = document.createElement("span");
+          editBtn.innerHTML = `<i class="fas fa-pen"></i>`;
+          editBtn.classList.add("edit");
+          span.append(editBtn);
+                    
+          todo.isDone ? li.style.borderBottom = "2px dotted green" : "";
+
           todo.isDone ? span.style.color = "lightgreen" : "";
           todo.isDone ? span.style.textDecoration = "line-through 1px rgb(2, 32, 37)" : "";
           
-          span.addEventListener("dblclick", (event) => {
+          editBtn.addEventListener("click", (event) => {
             let updateInput = document.createElement("input");
             updateInput.classList.add("update-box");
+
+            todo.isDone ? li.style.borderBottom = "2px dotted green" : "";
             todo.isDone ? updateInput.style.color = "lightgreen" : "";
             todo.isDone ? span.style.textDecoration = "line-through 1px rgb(2, 32, 37)" : "";
             updateInput.type = "text";
@@ -163,13 +175,17 @@ function main() {
             label.append(updateInput);
             updateInput.addEventListener("keyup", (event) => {
               if (event.keyCode === 13) {
-                span.innerText = event.target.value;
-                span.style.display = "inline";
-                updateInput.style.display = "none";
-                todo.name = event.target.value;
-                createUI(allTodos);
-                localStorage.setItem("todos", JSON.stringify(allTodos));
-              }
+                if (event.target.value !== "") {
+                    span.innerText = event.target.value;
+                    span.style.display = "inline";
+                    updateInput.style.display = "none";
+                    todo.name = event.target.value;
+                    createUI(allTodos);
+                    localStorage.setItem("todos", JSON.stringify(allTodos));
+                } else {
+                    alert("TODO can not be Empty!");
+                } 
+             }
             });
           });
   
